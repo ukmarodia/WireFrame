@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wireframe-to-Code
 
-## Getting Started
+![Wireframe-to-Code Logo](./public/Wireframetocode.png)
 
-First, run the development server:
+Transform your UI wireframes into fully functional code with the power of AI. This Next.js application leverages an AI model to convert hand-drawn or digital wireframes into React components, speeding up your development workflow.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- AI-powered wireframe recognition and code generation
+- Real-time image upload and processing
+- Syntax-highlighted code editor for live previews
+- User authentication and profile management
+- Responsive UI with Tailwind CSS
+
+## Tech Stack
+
+- **Frontend:** Next.js, React, TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes, Drizzle ORM
+- **Authentication:** Firebase Auth
+- **Deployment:** Vercel
+- **Utilities:** Sonner, Prisma, Zod
+
+## Demo
+
+![Demo GIF](./public/demo.gif)
+
+## Installation
+
+1. Clone the repository:
+   ```powershell
+   git clone https://github.com/ukmarodia/WireFrame.git
+   cd wireframe-to-code-main
+   ```
+2. Install dependencies:
+   ```powershell
+   npm install
+   ```
+3. Configure environment variables:
+   - Rename `.env.example` to `.env.local`
+   - Add your Firebase and database credentials
+
+4. Run the development server:
+   ```powershell
+   npm run dev
+   ```
+
+## Usage
+
+1. Register or login to access the dashboard.
+2. Upload a wireframe image on the Designs page.
+3. View and edit the generated React component code in the Code Editor.
+4. Copy or download the component for integration into your project.
+
+## Folder Structure
+
+```
+├── app/                 # Next.js App directory
+│   ├── api/             # API routes
+│   ├── components/      # Shared UI components
+│   └── page.tsx         # Main entry
+├── components/          # Design system components
+├── context/             # React context providers
+├── lib/                 # Utility functions
+├── public/              # Static assets
+├── hooks/               # Custom hooks
+├── data/                # Constants and sample data
+└── README.md            # Project documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contributions are welcome! Please follow these steps:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m "feat: add my feature"`
+4. Push to the branch: `git push origin feature/my-feature`
+5. Open a Pull Request describing your changes.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Made with ❤️ by the Wireframe-to-Code team

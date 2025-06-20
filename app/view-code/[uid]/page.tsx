@@ -60,33 +60,59 @@ function ViewCode() {
     }
 
     const GenerateCode = async (record: RECORD) => {
+        console.log('Starting code generation for record:', record);
         setLoading(true)
-        const res = await fetch('/api/ai-model', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                description: record?.description + ":" + Constants.PROMPT,
-                model: record.model,
-                imageUrl: record?.imageUrl
-            })
-        });
+        
+        try {
+            const res = await fetch('/api/ai-model', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    description: record?.description + ":" + Constants.PROMPT,
+                    model: record.model,
+                    imageUrl: record?.imageUrl
+                })
+            });
 
-        if (!res.body) return;
-        setLoading(false);
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+            console.log('AI API Response status:', res.status);
+            
+            if (!res.ok) {
+                console.error('AI API failed with status:', res.status);
+                const errorText = await res.text();
+                console.error('Error response:', errorText);
+                setLoading(false);
+                return;
+            }
 
-            const text = (decoder.decode(value)).replace('```jsx', '').replace('```javascript', '').replace('javascript', '').replace('jsx', '').replace('```', '');
-            setCodeResp((prev) => prev + text);
-            console.log(text);
+            if (!res.body) {
+                console.error('No response body');
+                setLoading(false);
+                return;
+            }
+            
+            setLoading(false);
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            
+            console.log('Starting to read stream...');
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    console.log('Stream completed');
+                    break;
+                }
 
+                const text = (decoder.decode(value)).replace('```jsx', '').replace('```javascript', '').replace('javascript', '').replace('jsx', '').replace('```', '');
+                console.log('Received chunk:', text.substring(0, 100) + '...');
+                setCodeResp((prev) => prev + text);
+            }
+
+            setIsReady(true);
+            UpdateCodeToDb();
+        } catch (error) {
+            console.error('Error in GenerateCode:', error);
+            setLoading(false);
         }
-
-        setIsReady(true);
-        UpdateCodeToDb();
     }
 
     useEffect(() => {

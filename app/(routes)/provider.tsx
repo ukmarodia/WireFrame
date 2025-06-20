@@ -3,7 +3,6 @@ import React, { useEffect } from 'react'
 import { useAuthContext } from '../provider';
 import { useRouter } from 'next/navigation';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import axios from "axios";
 import AppHeader from '../_components/AppHeader';
 import { AppSidebar } from '../_components/AppSidebar';
 
@@ -13,22 +12,46 @@ function DashboardProvider({
     children: React.ReactNode;
 }>) {
 
-    const user = useAuthContext();
+    const { user, loading } = useAuthContext();
     const router = useRouter();
 
     useEffect(() => {
-        if (!user?.user && user.user) return router.replace('/')
-        user?.user && checkUser()
+        if (loading) return; // wait for auth state
+        if (!user) {
+            router.replace('/');
+            return;
+        }
+        // Only call checkUser if we have a valid user
+        if (user && user.email) {
+            checkUser();
+        }
+    }, [user, loading])
 
-    }, [user])
 
-
+    // Check and register user in backend
     const checkUser = async () => {
-        const result = await axios.post('/api/user', {
-            userName: user?.user?.displayName,
-            userEmail: user?.user?.email
-        });
-        console.log(user);
+        if (!user || !user.email) return; // ensure user and email exist
+        
+        try {
+            console.log('Checking user:', user.email);
+            const res = await fetch('/api/user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userName: user.displayName || 'Anonymous',
+                    userEmail: user.email,
+                }),
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                console.log('User registered/found:', data);
+            } else {
+                console.error(`User API returned status ${res.status}`);
+            }
+        } catch (error) {
+            console.error('Error checking user:', error);
+        }
     }
 
 

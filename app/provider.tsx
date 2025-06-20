@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useState } from 'react'
 
 interface AuthContextType {
     user: User | null;
+    loading: boolean;
 }
 
 function Provider({
@@ -14,17 +15,19 @@ function Provider({
     children: React.ReactNode;
 }>) {
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
+            setLoading(false);
         });
 
         return () => unsubscribe(); // Cleanup
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user }}>
+        <AuthContext.Provider value={{ user, loading }}>
             <div>
                 {children}
             </div>

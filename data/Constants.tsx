@@ -42,17 +42,17 @@ export default {
         {
             name: 'Gemini Google',
             icon: '/google.png',
-            modelName: 'google/gemini-2.0-flash-001'
+            modelName: 'google/gemini-2.0-flash-thinking-exp:free'
         },
         {
             name: 'llama By Meta',
             icon: '/meta.png',
-            modelName: 'google/gemini-2.0-flash-001'
+            modelName: 'meta-llama/llama-3.2-3b-instruct:free'
         },
         {
             name: 'Deepkseek',
             icon: '/deepseek.png',
-            modelName: 'qwen/qwen-turbo'
+            modelName: 'qwen/qwen-2.5-7b-instruct:free'
         }
     ],
     DEPENDANCY: {

@@ -4,31 +4,40 @@ import { desc, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-    const { description, imageUrl, model, uid, email } = await req.json();
-    console.log(uid)
+    try {
+        const { description, imageUrl, model, uid, email } = await req.json();
+        console.log('Wireframe request:', { uid, email, model });
 
-    const creditResult = await db.select().from(usersTable)
-        .where(eq(usersTable.email, email));
+        const creditResult = await db.select().from(usersTable)
+            .where(eq(usersTable.email, email));
 
-    if (creditResult[0]?.credits && creditResult[0]?.credits > 0) {
+        if (creditResult[0]?.credits && creditResult[0]?.credits > 0) {
+            // Insert wireframe record
+            await db.insert(WireframeToCodeTable).values({
+                uid: uid.toString(),
+                description: description,
+                imageUrl: imageUrl,
+                model: model,
+                createdBy: email
+            });
 
-        const result = await db.insert(WireframeToCodeTable).values({
-            uid: uid.toString(),
-            description: description,
-            imageUrl: imageUrl,
-            model: model,
-            createdBy: email
-        }).returning({ id: WireframeToCodeTable.id });
+            // Get the inserted record
+            const result = await db.select()
+                .from(WireframeToCodeTable)
+                .where(eq(WireframeToCodeTable.uid, uid.toString()));
 
-        // Update user credits
-        const data = await db.update(usersTable).set({
-            credits: creditResult[0]?.credits - 1
-        }).where(eq(usersTable.email, email));
+            // Update user credits
+            await db.update(usersTable).set({
+                credits: creditResult[0]?.credits - 1
+            }).where(eq(usersTable.email, email));
 
-        return NextResponse.json(result);
-    }
-    else {
-        return NextResponse.json({ 'error': 'Not enough credits' })
+            return NextResponse.json(result[0]);
+        } else {
+            return NextResponse.json({ 'error': 'Not enough credits' });
+        }
+    } catch (error) {
+        console.error('Wireframe API error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 
@@ -57,14 +66,22 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: NextRequest) {
-    const { uid, codeResp } = await req.json();
+    try {
+        const { uid, codeResp } = await req.json();
 
-    const result = await db.update(WireframeToCodeTable)
-        .set({
-            code: codeResp
-        }).where(eq(WireframeToCodeTable.uid, uid))
-        .returning({ uid: WireframeToCodeTable.uid })
+        await db.update(WireframeToCodeTable)
+            .set({
+                code: codeResp
+            }).where(eq(WireframeToCodeTable.uid, uid));
 
-    return NextResponse.json(result);
+        // Get updated record
+        const result = await db.select()
+            .from(WireframeToCodeTable)
+            .where(eq(WireframeToCodeTable.uid, uid));
 
+        return NextResponse.json(result[0]);
+    } catch (error) {
+        console.error('Update code error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 }

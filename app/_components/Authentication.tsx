@@ -2,8 +2,10 @@
 import { auth } from '@/configs/firebaseConfig';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import React from 'react'
+import { useRouter } from 'next/navigation';
 
 function Authentication({ children }: any) {
+    const router = useRouter();
     const provider = new GoogleAuthProvider();
 
     const onButtonPress = () => {
@@ -17,6 +19,7 @@ function Authentication({ children }: any) {
                 console.log(user);
                 // IdP data available using getAdditionalUserInfo(result)
                 // ...
+                router.push('/dashboard'); // Redirect after login
             }).catch((error) => {
                 // Handle Errors here.
                 const errorCode = error.code;
